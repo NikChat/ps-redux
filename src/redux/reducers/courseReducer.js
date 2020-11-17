@@ -5,6 +5,8 @@ export default function courseReducer(state = [], action) {
     case types.CREATE_COURSE:
       // debugger; // 3. courseReducer: handles action
       return [...state, { ...action.course }];
+    case types.LOAD_COURSES_SUCCESS:
+      return action.courses; // whatever we return from the reducer, becomes the state
     default:
       return state;
   }
