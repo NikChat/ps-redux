@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import CourseForm from "./CourseForm";
 import { newCourse } from "../../../tools/mockData";
 
-function ManageCoursePage({ courses, authors, loadAuthors, loadCourses, saveCourse, ...props }) { // rest operator: assign rest of the properties to props object
+function ManageCoursePage({ courses, authors, loadAuthors, loadCourses, saveCourse, history, ...props }) { // rest operator: assign rest of the properties to props object
   const [course, setCourse] = useState({ ...props.course }); // initial state = course passed in on props
   const [errors, setErrors] = useState({});
 
@@ -34,7 +34,9 @@ function ManageCoursePage({ courses, authors, loadAuthors, loadCourses, saveCour
 
   function handleSave(event) {
     event.preventDefault();
-    saveCourse(course); // the course that is available in local state
+    saveCourse(course).then(() => {
+      history.push("/courses");
+    });
   }
 
   return (
@@ -54,7 +56,8 @@ ManageCoursePage.propTypes = {
   courses: PropTypes.array.isRequired,
   loadCourses: PropTypes.func.isRequired,
   loadAuthors: PropTypes.func.isRequired,
-  saveCourse: PropTypes.func.isRequired
+  saveCourse: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired
 };
 
 function mapStateToProps(state) { // This func determines what part of the state is passed to our component via props
