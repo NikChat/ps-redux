@@ -15,6 +15,8 @@ function ManageCoursePage({ courses, authors, loadAuthors, loadCourses, saveCour
       loadCourses().catch(error => {
         alert("Loading courses failed" + error);
       });
+    } else {
+      setCourse({ ...props.course }); // This will copy the course passed in on props to state anytime a new course is passed in on props.
     }
 
     if (authors.length === 0) {
@@ -22,7 +24,7 @@ function ManageCoursePage({ courses, authors, loadAuthors, loadCourses, saveCour
         alert("Loading authors failed" + error);
       });
     }
-  }, []); // This will only run once, when the components mounts
+  }, [props.course]); // When our props change, we need to update our component's state.
 
   function handleChange(event) { // Centralized Change Handler
     const { name, value } = event.target; // This destructure avoids the event getting garbage collected, so that it's available within the nested setCourse callback
@@ -60,9 +62,18 @@ ManageCoursePage.propTypes = {
   history: PropTypes.object.isRequired
 };
 
-function mapStateToProps(state) { // This func determines what part of the state is passed to our component via props
+export function getCourseBySlug(courses, slug) {
+  return courses.find(course => course.slug === slug) || null;
+}
+
+function mapStateToProps(state, ownProps) { // This func determines what part of the state is passed to our component via props
+  const slug = ownProps.match.params.slug; // Read the URL to determine if the user is trying to create a new course or edit
+  const course =
+    slug && state.courses.length > 0 // mapStateToProps runs every time the Redux store changes. So when courses are available,
+      ? getCourseBySlug(state.courses, slug) // we'll call getCourseBySlug.
+      : newCourse; // empty course we imported
   return {
-    course: newCourse, // empty course we imported
+    course,
     courses: state.courses,
     authors: state.authors
   };
