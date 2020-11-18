@@ -1,10 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { loadCourses } from "../../redux/actions/courseActions";
 import { loadAuthors } from "../../redux/actions/authorActions";
 import PropTypes from "prop-types";
+import CourseForm from "./CourseForm";
+import { newCourse } from "../../../tools/mockData";
 
-function ManageCoursePage({ courses, authors, loadAuthors, loadCourses }) {
+function ManageCoursePage({ courses, authors, loadAuthors, loadCourses, ...props }) { // rest operator: assign rest of the properties to props object
+  const [course, setCourse] = useState({ ...props.course }); // initial state = course passed in on props
+  const [errors, setErrors] = useState({});
+
   useEffect(() => {
     if (courses.length === 0) {
       loadCourses().catch(error => {
@@ -19,14 +24,27 @@ function ManageCoursePage({ courses, authors, loadAuthors, loadCourses }) {
     }
   }, []); // This will only run once, when the components mounts
 
-    return (
-      <>
-        <h2>Manage Course</h2>
-      </>
-    );
+  function handleChange(event) { // Centralized Change Handler
+    const { name, value } = event.target; // This destructure avoids the event getting garbage collected, so that it's available within the nested setCourse callback
+    setCourse(prevCourse => ({
+      ...prevCourse,
+      [name]: name === "authorId" ? parseInt(value, 10) : value
+    }));
+  }
+
+  return (
+    <CourseForm
+      course={course}
+      errors={errors}
+      authors={authors}
+      onChange={handleChange}
+      // onSave={handleSave}
+    />
+  );
 }
 
 ManageCoursePage.propTypes = {
+  course: PropTypes.object.isRequired,
   authors: PropTypes.array.isRequired,
   courses: PropTypes.array.isRequired,
   loadCourses: PropTypes.func.isRequired,
@@ -35,6 +53,7 @@ ManageCoursePage.propTypes = {
 
 function mapStateToProps(state) { // This func determines what part of the state is passed to our component via props
   return {
+    course: newCourse, // empty course we imported
     courses: state.courses,
     authors: state.authors
   };
