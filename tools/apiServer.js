@@ -44,6 +44,7 @@ server.use((req, res, next) => {
   next();
 });
 
+// Server-side Validation:
 server.post("/courses/", function(req, res, next) {
   const error = validateCourse(req.body);
   if (error) {

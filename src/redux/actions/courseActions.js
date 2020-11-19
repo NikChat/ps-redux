@@ -1,6 +1,6 @@
 import * as types from "./actionTypes";
 import * as courseApi from "../../api/courseApi";
-import { beginApiCall } from "./apiStatusActions";
+import { beginApiCall, apiCallError } from "./apiStatusActions";
 
 export function loadCourseSuccess(courses) {
   return { type: types.LOAD_COURSES_SUCCESS, courses };
@@ -23,6 +23,7 @@ export function loadCourses() { // First Thunk: returns a function, which is uti
         dispatch(loadCourseSuccess(courses)); // we dispatch an action
       })
       .catch(error => {
+        dispatch(apiCallError(error));
         throw error;
       });
   };
@@ -39,7 +40,8 @@ export function saveCourse(course) {
           ? dispatch(updateCourseSuccess(savedCourse))
           : dispatch(createCourseSuccess(savedCourse));
       })
-      .catch(error => {
+      .catch(error => { // When an API call fails, we need to decrement the num of calls in progress.
+        dispatch(apiCallError(error));
         throw error;
       });
   };

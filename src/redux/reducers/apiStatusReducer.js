@@ -12,7 +12,7 @@ export default function apiCallStatusReducer(
   if (action.type == types.BEGIN_API_CALL) {
     return state + 1;
   } 
-  else if (actionTypeEndsInSuccess(action.type)) {  // our thunks dispatch action types that end in _SUCCESS (i.e. CREATE_COURSE_SUCCESS)
+  else if (action.type === types.API_CALL_ERROR || actionTypeEndsInSuccess(action.type)) {  // our thunks dispatch action types that end in _SUCCESS (i.e. CREATE_COURSE_SUCCESS)
     return state - 1;                              // an action handled by multiple reducers
   }
 

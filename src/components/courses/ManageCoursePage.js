@@ -40,10 +40,15 @@ function ManageCoursePage({ courses, authors, loadAuthors, loadCourses, saveCour
   function handleSave(event) {
     event.preventDefault();
     setSaving(true);
-    saveCourse(course).then(() => {
-      toast.success("Course saved.");
-      history.push("/courses");
-    });
+    saveCourse(course)
+      .then(() => {
+        toast.success("Course saved.");
+        history.push("/courses");
+      })
+      .catch(error => {
+        setSaving(false); // we re-enable the save button
+        setErrors({ onSave: error.message }); // look CourseForm where we display the onSave error
+      });
   }
 
   return authors.length === 0 || courses.length === 0 ? ( // hide form until the necessary data is available
