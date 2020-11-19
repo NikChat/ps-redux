@@ -5,6 +5,7 @@ import { loadAuthors } from "../../redux/actions/authorActions";
 import PropTypes from "prop-types";
 import CourseForm from "./CourseForm";
 import { newCourse } from "../../../tools/mockData";
+import Spinner from "../common/Spinner";
 
 function ManageCoursePage({ courses, authors, loadAuthors, loadCourses, saveCourse, history, ...props }) { // rest operator: assign rest of the properties to props object
   const [course, setCourse] = useState({ ...props.course }); // initial state = course passed in on props
@@ -41,7 +42,9 @@ function ManageCoursePage({ courses, authors, loadAuthors, loadCourses, saveCour
     });
   }
 
-  return (
+  return authors.length === 0 || courses.length === 0 ? ( // hide form until the necessary data is available
+    <Spinner />
+  ) : (
     <CourseForm
       course={course}
       errors={errors}
